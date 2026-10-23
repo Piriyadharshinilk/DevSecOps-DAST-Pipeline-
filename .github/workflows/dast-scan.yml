@@ -27,6 +27,7 @@ jobs:
           sleep 3
           curl --fail http://127.0.0.1:8000/
 
+      
       - name: Execute OWASP ZAP DAST Scan
         uses: zaproxy/action-baseline@v0.13.0
         with:
