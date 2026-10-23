@@ -1,0 +1,36 @@
+
+name: DevSecOps Automated DAST Pipeline
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  dast_scan:
+    name: Automated DAST Scanning Suite
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Launch Target Web Application
+        run: |
+          python3 -m http.server 8000 --bind 127.0.0.1 > server.log 2>&1 &
+          sleep 3
+          curl --fail http://127.0.0.1:8000/
+
+      - name: Execute OWASP ZAP DAST Scan
+        uses: zaproxy/action-baseline@v0.13.0
+        with:
+          target: 'http://127.0.0.1:8000/'
+          fail_action: false
+          allow_issue_writing: true
+          token: ${{ secrets.GITHUB_TOKEN }}
